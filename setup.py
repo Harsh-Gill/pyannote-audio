@@ -1,26 +1,18 @@
 import os
-import sys
 from pathlib import Path
 
-from pkg_resources import VersionConflict, require
 from setuptools import find_packages, setup
 
 with open("README.md", mode="r", encoding="utf-8") as f:
     long_description = f.read()
 
 with open("requirements.txt", mode="r", encoding="utf-8") as f:
-    requirements = f.read().splitlines()
-
-try:
-    require("setuptools>=38.3")
-except VersionConflict:
-    print("Error: version of setuptools is too old (<38.3)!")
-    sys.exit(1)
-
+    requirements = [line.strip() for line in f.readlines()]
+    requirements = [line for line in requirements if line and not line.startswith("#")]
 
 ROOT_DIR = Path(__file__).parent.resolve()
-# Creating the version file
 
+# Creating the version file
 with open("version.txt", mode="r", encoding="utf-8") as f:
     version = f.read()
 
@@ -31,10 +23,10 @@ if os.getenv("BUILD_VERSION"):
     version = os.getenv("BUILD_VERSION")
 elif sha != "Unknown":
     version += "+" + sha[:7]
+
 print("-- Building version " + version)
 
 version_path = ROOT_DIR / "pyannote" / "audio" / "version.py"
-
 with open(version_path, mode="w", encoding="utf-8") as f:
     f.write("__version__ = '{}'\n".format(version))
 
